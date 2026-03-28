@@ -106,7 +106,7 @@ function PromoBanners() {
             return (
               <Link
                 key={`${banner.id}-${index}`}
-                to={banner.link}
+                to={"/movies"}
                 className="group block w-[320px] shrink-0"
               >
                 <div

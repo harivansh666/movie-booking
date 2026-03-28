@@ -10,6 +10,7 @@ import {
   LogOut,
   User,
   Search,
+  Shield,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -108,6 +109,14 @@ export default function Navbar() {
                 <User className="mr-1 inline h-3 w-3" />
                 {user?.name}
               </span>
+              {user?.role === "admin" && (
+                <Button variant="ghost" size="sm" asChild className="text-primary hover:text-primary">
+                  <Link to="/admin/bookings">
+                    <Shield className="mr-1 h-3 w-4" />
+                    Admin
+                  </Link>
+                </Button>
+              )}
               <Button variant="ghost" size="sm" onClick={handleSignOut}>
                 <LogOut className="mr-1 h-3 w-4" />
                 Sign Out
@@ -181,6 +190,19 @@ export default function Navbar() {
                     <User className="mr-2 inline h-4 w-4" />
                     {user?.name}
                   </div>
+                  {user?.role === "admin" && (
+                    <Button
+                      variant="ghost"
+                      className="justify-start text-primary"
+                      asChild
+                      onClick={() => setOpen(false)}
+                    >
+                      <Link to="/admin/bookings">
+                        <Shield className="mr-2 h-4 w-4" />
+                        Admin
+                      </Link>
+                    </Button>
+                  )}
                   <Button
                     variant="ghost"
                     className="justify-start"

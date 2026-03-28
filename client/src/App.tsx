@@ -8,10 +8,12 @@ import { ThemeProvider } from "next-themes";
 import { AnimatePresence } from "framer-motion";
 import Layout from "@/components/layout/Layout";
 import ProtectedRoute from "@/components/layout/ProtectedRoute";
+import AdminRoute from "@/components/layout/AdminRoute";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
 import Movies from "./pages/Movies";
 import MovieDetails from "./pages/MovieDetails";
+import AdminBookings from "./pages/AdminBookings";
 import Booking from "./pages/Booking";
 import MyBookings from "./pages/MyBookings";
 import Favorites from "./pages/Favorites";
@@ -66,6 +68,14 @@ const App = () => {
                         <ProtectedRoute>
                           <MyBookings />
                         </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin/bookings"
+                      element={
+                        <AdminRoute>
+                          <AdminBookings />
+                        </AdminRoute>
                       }
                     />
                     <Route path="/favorites" element={<Favorites />} />

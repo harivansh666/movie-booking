@@ -5,8 +5,9 @@ import {
   bookedSeatsTable,
   showtimesTable,
   moviesTable,
+  usersTable,
 } from "../db/schema";
-import { eq, and, inArray } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 
 export const createBooking = async (req: Request, res: Response) => {
   const { showtimeId, seats } = req.body;
@@ -251,6 +252,53 @@ export const getShowtimeAndSeats = async (req: Request, res: Response) => {
     res.status(200).json(result);
   } catch (error: any) {
     console.log("Error in getShowtimeAndSeats:", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const getAllBookings = async (req: Request, res: Response) => {
+  try {
+    const allBookings = await db
+      .select({
+        id: bookingsTable.id,
+        showtimeId: bookingsTable.showtimeId,
+        totalPrice: bookingsTable.totalPrice,
+        status: bookingsTable.status,
+        createdAt: bookingsTable.createdAt,
+        startTime: showtimesTable.startTime,
+        movieTitle: moviesTable.title,
+        moviePoster: moviesTable.posterPath,
+        hallNumber: showtimesTable.hallNumber,
+        userName: usersTable.name,
+        userEmail: usersTable.email,
+      })
+      .from(bookingsTable)
+      .innerJoin(
+        showtimesTable,
+        eq(bookingsTable.showtimeId, showtimesTable.id),
+      )
+      .innerJoin(moviesTable, eq(showtimesTable.movieId, moviesTable.id))
+      .innerJoin(usersTable, eq(bookingsTable.userId, usersTable.id))
+      .orderBy(desc(bookingsTable.createdAt));
+
+    // Get seats for each booking
+    const bookingsWithSeats = await Promise.all(
+      allBookings.map(async (booking) => {
+        const seats = await db
+          .select({
+            row: bookedSeatsTable.seatRow,
+            col: bookedSeatsTable.seatCol,
+          })
+          .from(bookedSeatsTable)
+          .where(eq(bookedSeatsTable.bookingId, booking.id));
+
+        return { ...booking, seats };
+      }),
+    );
+
+    res.status(200).json(bookingsWithSeats);
+  } catch (error: any) {
+    console.log("Error in getAllBookings:", error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
